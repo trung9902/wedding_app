@@ -1,0 +1,20 @@
+[
+  {
+    "id": "wish-1",
+    "name": "Minh & Trang",
+    "message": "Chúc hai bạn mãi mãi yêu thương nhau như ngày đầu, cùng nhau xây đắp một gia đình ngập tràn tiếng cười và hạnh phúc!",
+    "createdAt": "2026-10-01T15:30:00.000Z"
+  },
+  {
+    "id": "wish-2",
+    "name": "Anh Tuấn (Team Tech)",
+    "message": "Chúc chú rể Dũng và cô dâu Phương bách niên giai lão, cuộc sống luôn viên mãn ngọt ngào!",
+    "createdAt": "2026-10-02T10:00:00.000Z"
+  },
+  {
+    "id": "wish-3",
+    "name": "Hội bạn thân cấp 3",
+    "message": "Cuối cùng ngày này cũng tới! Chúc đôi bạn trẻ sớm có tin vui và luôn đồng hành cùng nhau nhé!",
+    "createdAt": "2026-10-03T18:45:00.000Z"
+  }
+]

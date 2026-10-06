@@ -1,0 +1,20 @@
+[
+  {
+    "id": "rsvp-1",
+    "name": "Nguyễn Hoàng Long",
+    "phone": "0912345678",
+    "attending": "yes",
+    "guestCount": 2,
+    "note": "Chúc hai bạn trăm năm hạnh phúc, sớm sinh quý tử nhé!",
+    "createdAt": "2026-10-01T14:20:00.000Z"
+  },
+  {
+    "id": "rsvp-2",
+    "name": "Trần Thu Hà",
+    "phone": "0987654321",
+    "attending": "yes",
+    "guestCount": 1,
+    "note": "Rất vinh dự được đến chung vui cùng Mai Phương và Anh Dũng!",
+    "createdAt": "2026-10-02T09:15:00.000Z"
+  }
+]

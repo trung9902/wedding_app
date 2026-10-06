@@ -1,0 +1,228 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Luxury Royal Color Tokens */
+  --royal-gold-primary: #C5A059;
+  --royal-gold-light: #ECC880;
+  --royal-gold-deep: #8C621E;
+  --royal-gold-cream: #FAF5E8;
+  --royal-ivory-warm: #FAF7F2;
+  --royal-silk-nude: #F4EBE1;
+  --royal-bordeaux-rich: #5E121E;
+  --royal-bordeaux-soft: #852233;
+  --royal-charcoal-dark: #2C2018;
+  --royal-muted-stone: #6B5B52;
+
+  /* Metallic Gold Foil Gradients */
+  --gold-gradient: linear-gradient(135deg, #ECC880 0%, #D4AF37 40%, #AA7A2B 75%, #ECC880 100%);
+  --gold-border-gradient: linear-gradient(to right, #FAF5E8, #C5A059, #ECC880, #C5A059, #FAF5E8);
+  --wax-seal-gradient: radial-gradient(circle at 35% 35%, #852233 0%, #5E121E 65%, #36070D 100%);
+  --parchment-glass: rgba(253, 251, 247, 0.94);
+}
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  color: #2C2018;
+  background-color: #FAF7F2;
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(236, 200, 128, 0.08) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(133, 34, 51, 0.05) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(197, 160, 89, 0.04) 0px, transparent 100%);
+  background-attachment: fixed;
+}
+
+.font-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.font-cursive {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-sans {
+  font-family: 'Montserrat', system-ui, sans-serif;
+}
+
+/* Gold Foil Text Gradient */
+.gold-foil-text {
+  background: linear-gradient(135deg, #8C621E 0%, #C5A059 40%, #ECC880 70%, #AA7A2B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bordeaux-foil-text {
+  background: linear-gradient(135deg, #5E121E 0%, #852233 50%, #B83A4B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Keyframes & Animations */
+@keyframes goldShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { 
+    transform: scale(1); 
+    box-shadow: 0 8px 24px rgba(197, 160, 89, 0.35); 
+  }
+  50% { 
+    transform: scale(1.03); 
+    box-shadow: 0 12px 32px rgba(197, 160, 89, 0.65); 
+  }
+}
+
+@keyframes waxSealPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 10px 20px rgba(94, 18, 30, 0.4));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 14px 28px rgba(94, 18, 30, 0.7));
+  }
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spinSlow 16s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.8s ease-in-out infinite;
+}
+
+.animate-wax-pulse {
+  animation: waxSealPulse 3s ease-in-out infinite;
+}
+
+/* Luxury Royal Gold Button */
+.btn-royal-gold {
+  background: linear-gradient(90deg, #AA7A2B 0%, #ECC880 25%, #C5A059 50%, #ECC880 75%, #AA7A2B 100%);
+  background-size: 200% 100%;
+  color: #2C2018;
+  font-weight: 600;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 6px 18px rgba(197, 160, 89, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-royal-gold:hover {
+  background-position: right center;
+  box-shadow: 0 8px 25px rgba(197, 160, 89, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+.btn-royal-gold:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(197, 160, 89, 0.4);
+}
+
+/* Luxury Bordeaux Button */
+.btn-royal-bordeaux {
+  background: linear-gradient(135deg, #852233 0%, #5E121E 60%, #36070D 100%);
+  color: #FAF5E8;
+  font-weight: 600;
+  transition: all 0.35s ease;
+  box-shadow: 0 6px 18px rgba(94, 18, 30, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.btn-royal-bordeaux:hover {
+  background: linear-gradient(135deg, #B83A4B 0%, #852233 60%, #5E121E 100%);
+  box-shadow: 0 8px 24px rgba(94, 18, 30, 0.55);
+  transform: translateY(-2px);
+}
+
+/* Royal Parchment Glass & Cards */
+.parchment-panel {
+  background: rgba(253, 251, 247, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(197, 160, 89, 0.35);
+  box-shadow: 
+    0 12px 35px -8px rgba(44, 32, 24, 0.08),
+    0 2px 6px -1px rgba(197, 160, 89, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.parchment-card {
+  background: #FDFBF7;
+  border: 1px solid rgba(197, 160, 89, 0.3);
+  box-shadow: 
+    0 10px 25px -5px rgba(44, 32, 24, 0.06),
+    0 4px 10px -2px rgba(197, 160, 89, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  transition: all 0.35s ease;
+}
+
+.parchment-card:hover {
+  border-color: rgba(197, 160, 89, 0.6);
+  box-shadow: 
+    0 16px 35px -6px rgba(44, 32, 24, 0.1),
+    0 6px 15px -2px rgba(197, 160, 89, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+}
+
+/* Vintage Clockwork Countdown Pod */
+.clockwork-pod {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF7F2 100%);
+  border: 1px solid #ECC880;
+  box-shadow: 
+    0 6px 18px -3px rgba(140, 98, 30, 0.12),
+    0 2px 6px -1px rgba(140, 98, 30, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  position: relative;
+}
+
+/* Palace Arch Frame */
+.royal-arch-frame {
+  border-top-left-radius: 9999px;
+  border-top-right-radius: 9999px;
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  padding: 8px;
+  background: linear-gradient(180deg, #ECC880 0%, #C5A059 50%, #8C621E 100%);
+  box-shadow: 
+    0 20px 40px -10px rgba(44, 32, 24, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Luxury Royal Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF5E8;
+}
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 4px;
+  border: 2px solid #FAF5E8;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #AA7A2B;
+}
