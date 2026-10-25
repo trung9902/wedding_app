@@ -640,7 +640,8 @@ export default function AdminPage() {
             {[
               { id: 'couple', label: 'Cô Dâu & Chú Rể', icon: Heart },
               { id: 'event', label: 'Thời Gian & Địa Điểm', icon: Calendar },
-              { id: 'media', label: 'Ảnh & Nhạc Nền', icon: ImageIcon },
+              { id: 'media', label: 'Album Hình Ảnh', icon: ImageIcon },
+              { id: 'music', label: 'Âm Nhạc Hôn Lễ', icon: Music, badge: 'Mới' },
               { id: 'bank', label: 'STK & VietQR', icon: CreditCard },
               { id: 'links', label: 'Tạo Link Mời Riêng', icon: Share2, badge: 'Hot' },
               { id: 'rsvps', label: 'Khách RSVP', icon: Users, count: rsvps.length },
