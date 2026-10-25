@@ -1261,28 +1261,58 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              {/* Upload from PC section */}
-              <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  <h4 className="text-xs font-semibold text-slate-900">Tải File Nhạc Riêng Từ Máy Tính</h4>
-                  <p className="text-[11px] text-slate-500">Hỗ trợ định dạng .mp3, .m4a, .wav (tối đa 15MB). File sẽ tự động lưu và phát mượt mà trên thiệp.</p>
+              {/* Upload from PC & Custom URL controls */}
+              <div className="pt-5 border-t border-slate-100 space-y-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="text-xs font-semibold text-slate-900">Cách 1: Tải File Nhạc Riêng Từ Máy Tính</h4>
+                    <p className="text-[11px] text-slate-500">Hỗ trợ định dạng .mp3, .m4a, .wav (tối đa 15MB). File sẽ tự động lưu và phát mượt mà trên thiệp.</p>
+                  </div>
+                  <div>
+                    <input
+                      type="file"
+                      ref={musicFileInputRef}
+                      accept="audio/*"
+                      onChange={handleUploadMusicFile}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => musicFileInputRef.current?.click()}
+                      className="h-9 px-4 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center space-x-1.5 transition shadow-2xs cursor-pointer shrink-0"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Chọn File Nhạc Từ Máy Tính</span>
+                    </button>
+                  </div>
                 </div>
-                <div>
-                  <input
-                    type="file"
-                    ref={musicFileInputRef}
-                    accept="audio/*"
-                    onChange={handleUploadMusicFile}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => musicFileInputRef.current?.click()}
-                    className="h-9 px-4 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center space-x-1.5 transition shadow-2xs cursor-pointer"
-                  >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>Chọn File Nhạc Từ Máy Tính</span>
-                  </button>
+
+                <div className="pt-3 border-t border-slate-100/70">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <h4 className="text-xs font-semibold text-slate-900">Cách 2: Hoặc Dán URL Nhạc Online Trực Tiếp</h4>
+                    <span className="text-[10px] text-slate-400 font-mono">Đường dẫn file .mp3 / .ogg</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      value={wedding.media.musicUrl || ''}
+                      onChange={e => setWedding({
+                        ...wedding,
+                        media: { ...wedding.media, musicUrl: e.target.value }
+                      })}
+                      placeholder="https://.../music.mp3"
+                      className="flex-1 h-9 px-3 rounded-lg border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-slate-900 bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePlaySong(wedding.media.musicUrl)}
+                      disabled={!wedding.media.musicUrl}
+                      className="h-9 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer shrink-0"
+                    >
+                      <Play className="w-3.5 h-3.5" />
+                      <span>Nghe Thử</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1364,37 +1394,6 @@ export default function AdminPage() {
                   );
                 })}
               </div>
-            </div>
-
-            {/* Custom URL Option */}
-            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs space-y-2">
-              <label className="block text-xs font-semibold text-slate-900">
-                Hoặc Dán Link File MP3 Trực Tiếp (Custom Audio URL)
-              </label>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  value={wedding.media.musicUrl || ''}
-                  onChange={e => setWedding({
-                    ...wedding,
-                    media: { ...wedding.media, musicUrl: e.target.value }
-                  })}
-                  placeholder="https://example.com/audio/song.mp3"
-                  className="flex-1 h-9 px-3 rounded-lg border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-slate-900"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleTogglePlaySong(wedding.media.musicUrl)}
-                  disabled={!wedding.media.musicUrl}
-                  className="h-9 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer"
-                >
-                  <Play className="w-3.5 h-3.5" />
-                  <span>Nghe Thử</span>
-                </button>
-              </div>
-              <p className="text-[11px] text-slate-400">
-                Lưu ý: Link phải trỏ trực tiếp đến file âm thanh (.mp3, .ogg, .wav). Khuyến nghị nên chọn trong kho nhạc có sẵn hoặc tải file từ máy tính để đảm bảo tốc độ tải nhanh nhất.
-              </p>
             </div>
 
           </div>
