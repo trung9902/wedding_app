@@ -2,12 +2,63 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Lock, Save, RefreshCw, Trash2, Download, CheckCircle, 
+  Lock, Save, Volume2, Play, Pause, Music2, Disc, Sliders, RefreshCw, Trash2, Download, CheckCircle, 
   AlertCircle, Users, Heart, Image as ImageIcon, Music, CreditCard, 
   Calendar, Eye, LogOut, Plus, ExternalLink, Share2, Copy, Check, 
   Settings, Sparkles, QrCode, ArrowLeft, MessageSquare, ShieldCheck,
   ChevronRight, Laptop, Smartphone, FileSpreadsheet, Send, Upload, FileUp
 } from 'lucide-react';
+
+const WEDDING_MUSIC_PRESETS = [
+  {
+    id: 'canon-in-d',
+    title: 'Canon in D Major (Johann Pachelbel)',
+    subtitle: 'Bản hòa tấu vương giả kinh điển, trang nghiêm và bất hủ của mọi lễ đường',
+    duration: '02:51',
+    url: '/music/canon-in-d.ogg',
+    genre: 'Cổ Điển Hoàng Gia',
+  },
+  {
+    id: 'wedding-march',
+    title: 'Wedding March (Felix Mendelssohn)',
+    subtitle: 'Hành khúc đón dâu trang trọng khi cô dâu bước vào thánh đường',
+    duration: '01:05',
+    url: '/music/wedding-march.ogg',
+    genre: 'Hành Khúc Hôn Lễ',
+  },
+  {
+    id: 'until-i-found-you',
+    title: 'Until I Found You (Piano Romance)',
+    subtitle: 'Giai điệu tình yêu sâu lắng, ngọt ngào và lãng mạn',
+    duration: '03:15',
+    url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=until-i-found-you-piano-112191.mp3',
+    genre: 'Piano Lãng Mạn',
+  },
+  {
+    id: 'beautiful-in-white',
+    title: 'Beautiful In White (Violin & Piano)',
+    subtitle: 'Khúc ca huyền thoại tôn vinh vẻ đẹp thuần khiết của tân nương',
+    duration: '03:40',
+    url: 'https://ia800908.us.archive.org/33/items/ShaneFilanBeautifulInWhite/Shane%20Filan%20-%20Beautiful%20In%20White.mp3',
+    genre: 'Violin Romance',
+  },
+  {
+    id: 'a-thousand-years',
+    title: 'A Thousand Years (Cello & Piano)',
+    subtitle: 'Bản tình ca ngàn năm lắng đọng, lay động trái tim người nghe',
+    duration: '04:12',
+    url: 'https://ia801602.us.archive.org/11/items/AThousandYears_201604/A%20Thousand%20Years.mp3',
+    genre: 'Cello & Piano',
+  },
+  {
+    id: 'anh-nang-cua-anh',
+    title: 'Ánh Nắng Của Anh (Piano Solo)',
+    subtitle: 'Khúc nhạc ngọt ngào dành riêng cho tình yêu trọn vẹn của đôi lứa',
+    duration: '03:28',
+    url: 'https://ia801509.us.archive.org/15/items/AnhNangCuaAnhPiano/Anh%20Nang%20Cua%20Anh%20-%20Piano.mp3',
+    genre: 'Piano Hòa Tấu',
+  },
+];
 
 const POPULAR_BANKS = [
   { code: 'VCB', name: 'Vietcombank' },
@@ -51,6 +102,13 @@ export default function AdminPage() {
   const coverImageRef = useRef(null);
   const galleryImageRef = useRef(null);
   const csvImportRef = useRef(null);
+
+  // Audio music player preview state
+  const [previewAudioUrl, setPreviewAudioUrl] = useState('');
+  const [isPlayingPreview, setIsPlayingPreview] = useState(false);
+  const audioPlayerRef = useRef(null);
+  const musicFileInputRef = useRef(null);
+
 
   // Auto login check from localStorage
   useEffect(() => {
@@ -266,6 +324,68 @@ export default function AdminPage() {
         gallery: updated
       }
     });
+  };
+
+
+  // Toggle play audio preview
+  const handleTogglePlaySong = (url) => {
+    if (!url) return;
+    if (previewAudioUrl === url && isPlayingPreview) {
+      audioPlayerRef.current?.pause();
+      setIsPlayingPreview(false);
+    } else {
+      setPreviewAudioUrl(url);
+      setIsPlayingPreview(true);
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.src = url;
+        audioPlayerRef.current.play().catch(e => console.log('Audio preview playback error:', e));
+      }
+    }
+  };
+
+  // Select preset song
+  const handleSelectSong = (url, title) => {
+    setWedding({
+      ...wedding,
+      media: {
+        ...wedding.media,
+        musicUrl: url
+      }
+    });
+    setStatusMsg({ type: 'success', text: `Đã chọn bài hát: ${title}` });
+    setTimeout(() => setStatusMsg(null), 3000);
+  };
+
+  // Upload local music file (.mp3, .m4a, .wav)
+  const handleUploadMusicFile = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024) {
+      alert('Dung lượng file nhạc không được vượt quá 15MB!');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result;
+      if (typeof dataUrl === 'string') {
+        setWedding({
+          ...wedding,
+          media: {
+            ...wedding.media,
+            musicUrl: dataUrl
+          }
+        });
+        setPreviewAudioUrl(dataUrl);
+        setIsPlayingPreview(true);
+        if (audioPlayerRef.current) {
+          audioPlayerRef.current.src = dataUrl;
+          audioPlayerRef.current.play().catch(e => console.log('Audio preview playback error:', e));
+        }
+        setStatusMsg({ type: 'success', text: `Đã tải lên và chọn bài hát: ${file.name}` });
+        setTimeout(() => setStatusMsg(null), 4000);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   // Export RSVPs to CSV
@@ -994,18 +1114,23 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-slate-700 mb-1">Đường dẫn file nhạc nền MP3</label>
-              <input
-                type="text"
-                value={wedding.media.musicUrl}
-                onChange={e => setWedding({
-                  ...wedding,
-                  media: { ...wedding.media, musicUrl: e.target.value }
-                })}
-                placeholder="https://.../music.mp3"
-                className="w-full h-9 px-3 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
+            <div className="p-4 rounded-lg bg-amber-50/70 border border-amber-200/80 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-800">
+                  <Music className="w-4 h-4" />
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-slate-900 block">Âm nhạc hôn lễ đã chuyển sang Tab riêng</span>
+                  <span className="text-[11px] text-slate-500">Bấm tab "Âm Nhạc Hôn Lễ" để nghe thử, chọn bài hát có sẵn hoặc tải file MP3 từ máy tính.</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('music')}
+                className="h-8 px-3 rounded-lg bg-slate-900 text-white text-xs font-medium hover:bg-slate-800 transition cursor-pointer"
+              >
+                Mở Tab Âm Nhạc ↗
+              </button>
             </div>
 
             {/* Gallery Images List */}
@@ -1071,6 +1196,209 @@ export default function AdminPage() {
         )}
 
         {/* ========================================================= */}
+        {/* ========================================================= */}
+        {/* TAB 4: ÂM NHẠC HÔN LỄ (WEDDING MUSIC STUDIO) */}
+        {/* ========================================================= */}
+        {activeTab === 'music' && (
+          <div className="space-y-6 max-w-4xl">
+            {/* Hidden audio element for preview */}
+            <audio 
+              ref={audioPlayerRef} 
+              onEnded={() => setIsPlayingPreview(false)}
+              className="hidden" 
+            />
+
+            {/* Current Active Song Player Hero Card */}
+            <div className="bg-white p-6 sm:p-7 rounded-xl border border-slate-200 shadow-2xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                <div className="flex items-center space-x-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all ${
+                    isPlayingPreview 
+                      ? 'bg-slate-900 text-amber-400 shadow-md ring-4 ring-amber-100 animate-pulse' 
+                      : 'bg-slate-100 text-slate-700'
+                  }`}>
+                    {isPlayingPreview ? <Disc className="w-7 h-7 animate-spin" /> : <Music2 className="w-7 h-7" />}
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 mb-1 inline-block">
+                      Bài Hát Đang Sử Dụng Cho Thiệp Mời
+                    </span>
+                    <h3 className="text-base font-semibold text-slate-900 tracking-tight">
+                      {WEDDING_MUSIC_PRESETS.find(p => p.url === wedding.media.musicUrl)?.title || 'Bài Hát Đã Chọn'}
+                    </h3>
+                    <p className="text-xs text-slate-500 font-mono truncate max-w-md mt-0.5">
+                      {wedding.media.musicUrl?.startsWith('data:') 
+                        ? '🎵 File âm thanh tùy chỉnh tải từ máy tính' 
+                        : wedding.media.musicUrl || 'Chưa cài đặt bài hát nào'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleTogglePlaySong(wedding.media.musicUrl)}
+                    disabled={!wedding.media.musicUrl}
+                    className={`h-10 px-5 rounded-lg text-xs font-semibold flex items-center space-x-2 transition shadow-xs cursor-pointer ${
+                      isPlayingPreview && previewAudioUrl === wedding.media.musicUrl
+                        ? 'bg-amber-600 hover:bg-amber-700 text-white'
+                        : 'bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50'
+                    }`}
+                  >
+                    {isPlayingPreview && previewAudioUrl === wedding.media.musicUrl ? (
+                      <>
+                        <Pause className="w-4 h-4 fill-current" />
+                        <span>Tạm Dừng</span>
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 fill-current" />
+                        <span>Nghe Thử Bài Này</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Upload from PC section */}
+              <div className="pt-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-xs font-semibold text-slate-900">Tải File Nhạc Riêng Từ Máy Tính</h4>
+                  <p className="text-[11px] text-slate-500">Hỗ trợ định dạng .mp3, .m4a, .wav (tối đa 15MB). File sẽ tự động lưu và phát mượt mà trên thiệp.</p>
+                </div>
+                <div>
+                  <input
+                    type="file"
+                    ref={musicFileInputRef}
+                    accept="audio/*"
+                    onChange={handleUploadMusicFile}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => musicFileInputRef.current?.click()}
+                    className="h-9 px-4 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-medium flex items-center space-x-1.5 transition shadow-2xs cursor-pointer"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Chọn File Nhạc Từ Máy Tính</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Curated Wedding Presets Playlist */}
+            <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-2xs space-y-4">
+              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-semibold tracking-tight text-slate-900">
+                    Kho Nhạc Hôn Lễ Tuyển Chọn (Curated Wedding Playlist)
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Bấm "Nghe thử" để thẩm âm, bấm "Chọn bài này" để đặt làm nhạc nền cho thiệp cưới
+                  </p>
+                </div>
+                <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                  {WEDDING_MUSIC_PRESETS.length} Bài Hát Bất Hủ
+                </span>
+              </div>
+
+              <div className="divide-y divide-slate-100">
+                {WEDDING_MUSIC_PRESETS.map((track) => {
+                  const isSelected = wedding.media.musicUrl === track.url;
+                  const isPlayingThis = isPlayingPreview && previewAudioUrl === track.url;
+
+                  return (
+                    <div 
+                      key={track.id}
+                      className={`py-3.5 px-3 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${
+                        isSelected ? 'bg-amber-50/50 border border-amber-200/60' : 'hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3.5">
+                        <button
+                          type="button"
+                          onClick={() => handleTogglePlaySong(track.url)}
+                          className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition shadow-2xs cursor-pointer ${
+                            isPlayingThis 
+                              ? 'bg-amber-600 text-white' 
+                              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                          }`}
+                          title={isPlayingThis ? 'Tạm dừng' : 'Nghe thử'}
+                        >
+                          {isPlayingThis ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+                        </button>
+
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-xs font-semibold text-slate-900">{track.title}</span>
+                            <span className="text-[10px] px-1.5 py-0.2 rounded font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                              {track.genre}
+                            </span>
+                            {isSelected && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded font-semibold bg-emerald-100 text-emerald-800">
+                                ✓ Đang chọn
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-slate-500 mt-0.5">{track.subtitle}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-3 self-end sm:self-auto shrink-0">
+                        <span className="text-xs text-slate-400 font-mono">{track.duration}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectSong(track.url, track.title)}
+                          disabled={isSelected}
+                          className={`h-8 px-3.5 rounded-lg text-xs font-medium transition cursor-pointer ${
+                            isSelected
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default font-semibold'
+                              : 'bg-slate-900 hover:bg-slate-800 text-white shadow-2xs'
+                          }`}
+                        >
+                          {isSelected ? '✓ Đang Dùng' : 'Chọn Bài Này'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Custom URL Option */}
+            <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-2xs space-y-2">
+              <label className="block text-xs font-semibold text-slate-900">
+                Hoặc Dán Link File MP3 Trực Tiếp (Custom Audio URL)
+              </label>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={wedding.media.musicUrl || ''}
+                  onChange={e => setWedding({
+                    ...wedding,
+                    media: { ...wedding.media, musicUrl: e.target.value }
+                  })}
+                  placeholder="https://example.com/audio/song.mp3"
+                  className="flex-1 h-9 px-3 rounded-lg border border-slate-300 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-slate-900"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleTogglePlaySong(wedding.media.musicUrl)}
+                  disabled={!wedding.media.musicUrl}
+                  className="h-9 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium flex items-center space-x-1.5 transition cursor-pointer"
+                >
+                  <Play className="w-3.5 h-3.5" />
+                  <span>Nghe Thử</span>
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Lưu ý: Link phải trỏ trực tiếp đến file âm thanh (.mp3, .ogg, .wav). Khuyến nghị nên chọn trong kho nhạc có sẵn hoặc tải file từ máy tính để đảm bảo tốc độ tải nhanh nhất.
+              </p>
+            </div>
+
+          </div>
+        )}
+
         {/* TAB 4: STK & VIETQR */}
         {/* ========================================================= */}
         {activeTab === 'bank' && (
