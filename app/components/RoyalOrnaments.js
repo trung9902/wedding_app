@@ -43,16 +43,16 @@ export function CornerFlourish({ position = "top-left", className = "w-8 h-8 tex
 }
 
 /**
- * C. Con Dấu Sáp Hoàng Gia (Royal Monogram Wax Seal)
+ * C. Con Dấu Sáp Thủ Công (Authentic Handcrafted Wax Seal)
  */
-export function RoyalWaxSeal({ initials = "M & Q", onClick, isPulsing = true, size = "large" }) {
+export function RoyalWaxSeal({ initials = "A & M", onClick, isPulsing = true, size = "large" }) {
   const sizeClasses = size === "large" 
-    ? "w-24 h-24 sm:w-28 sm:h-28" 
-    : "w-16 h-16 sm:w-20 sm:h-20";
+    ? "w-20 h-20 sm:w-24 sm:h-24" 
+    : "w-14 h-14 sm:w-16 sm:h-16";
 
   const fontSizes = size === "large"
-    ? "text-2xl sm:text-3xl"
-    : "text-lg sm:text-xl";
+    ? "text-xl sm:text-2xl"
+    : "text-base sm:text-lg";
 
   return (
     <div 
@@ -60,29 +60,17 @@ export function RoyalWaxSeal({ initials = "M & Q", onClick, isPulsing = true, si
       className={`relative cursor-pointer group select-none ${isPulsing ? 'animate-wax-pulse' : ''}`}
       title="Chạm để mở thiệp cưới"
     >
-      {/* Vành sáp viền gợn sóng tự nhiên */}
-      <div className={`${sizeClasses} rounded-full bg-gradient-to-br from-[#852233] via-[#5E121E] to-[#36070D] p-1.5 shadow-[0_12px_28px_rgba(94,18,30,0.55),inset_0_2px_4px_rgba(255,255,255,0.3)] flex items-center justify-center transition-all duration-500 group-hover:scale-105 group-hover:shadow-[0_16px_36px_rgba(94,18,30,0.7)]`}>
-        {/* Viền kim loại dập nổi phía trong */}
-        <div className="w-full h-full rounded-full border-2 border-dashed border-[#ECC880]/80 flex flex-col items-center justify-center bg-gradient-to-br from-[#7A1626] to-[#450912] shadow-inner relative overflow-hidden">
-          {/* Vòng hoa nguyệt quế dập chìm */}
-          <div className="absolute inset-1.5 border border-[#ECC880]/30 rounded-full pointer-events-none"></div>
+      {/* Vành sáp nung chảy hữu cơ chân thực */}
+      <div className={`${sizeClasses} rounded-full bg-gradient-to-br from-[#80222C] via-[#631820] to-[#420E15] p-1.5 shadow-[0_10px_25px_rgba(66,14,21,0.45),inset_0_2px_4px_rgba(255,255,255,0.2)] flex items-center justify-center transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_14px_30px_rgba(66,14,21,0.6)]`}>
+        {/* Lòng con dấu dập chìm khắc tên lồng */}
+        <div className="w-full h-full rounded-full border border-[#963540]/60 flex flex-col items-center justify-center bg-gradient-to-br from-[#691A23] to-[#450F16] shadow-inner relative overflow-hidden">
+          {/* Vòng chỉ chìm tinh tế */}
+          <div className="absolute inset-1.5 border border-[#963540]/30 rounded-full pointer-events-none"></div>
           
-          <span className="font-serif text-[8px] sm:text-[9px] tracking-[0.25em] text-[#ECC880] uppercase font-bold mb-0.5 opacity-90">
-            OFFICIAL
-          </span>
-          <span className={`font-cursive ${fontSizes} text-[#FAF5E8] font-bold tracking-wide drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]`}>
+          <span className={`font-serif italic ${fontSizes} text-[#FAF7F2] font-normal tracking-wider drop-shadow-sm`}>
             {initials}
           </span>
-          <span className="font-serif text-[7px] sm:text-[8px] tracking-[0.2em] text-[#ECC880] uppercase opacity-85 mt-0.5">
-            INVITATION
-          </span>
         </div>
-      </div>
-
-      {/* Ruy băng lụa buông rủ bên dưới con dấu */}
-      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex space-x-1.5 pointer-events-none">
-        <div className="w-3.5 h-6 bg-[#5E121E] shadow-lg transform -rotate-12 rounded-b-sm border-b-2 border-[#ECC880]/60"></div>
-        <div className="w-3.5 h-6 bg-[#6B1724] shadow-lg transform rotate-12 rounded-b-sm border-b-2 border-[#ECC880]/60"></div>
       </div>
     </div>
   );

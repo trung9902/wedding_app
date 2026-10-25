@@ -3,33 +3,26 @@
 @tailwind utilities;
 
 :root {
-  /* Luxury Royal Color Tokens */
-  --royal-gold-primary: #C5A059;
-  --royal-gold-light: #ECC880;
-  --royal-gold-deep: #8C621E;
-  --royal-gold-cream: #FAF5E8;
-  --royal-ivory-warm: #FAF7F2;
-  --royal-silk-nude: #F4EBE1;
-  --royal-bordeaux-rich: #5E121E;
-  --royal-bordeaux-soft: #852233;
-  --royal-charcoal-dark: #2C2018;
-  --royal-muted-stone: #6B5B52;
-
-  /* Metallic Gold Foil Gradients */
-  --gold-gradient: linear-gradient(135deg, #ECC880 0%, #D4AF37 40%, #AA7A2B 75%, #ECC880 100%);
-  --gold-border-gradient: linear-gradient(to right, #FAF5E8, #C5A059, #ECC880, #C5A059, #FAF5E8);
-  --wax-seal-gradient: radial-gradient(circle at 35% 35%, #852233 0%, #5E121E 65%, #36070D 100%);
-  --parchment-glass: rgba(253, 251, 247, 0.94);
+  /* Editorial Quiet Luxury Color Tokens */
+  --ink-primary: #1C1A17;
+  --ink-secondary: #4A4641;
+  --ink-muted: #7D776F;
+  --accent-burgundy: #73202B;
+  --accent-bronze: #8A725A;
+  --paper-cream: #FAF7F2;
+  --paper-sand: #F5EFE6;
+  --border-delicate: #E5DFD5;
+  --border-accent: #D6CEBF;
 }
 
 body {
   font-family: 'Montserrat', system-ui, sans-serif;
-  color: #2C2018;
+  color: #1C1A17;
   background-color: #FAF7F2;
   background-image: 
-    radial-gradient(at 10% 20%, rgba(236, 200, 128, 0.08) 0px, transparent 50%),
-    radial-gradient(at 90% 80%, rgba(133, 34, 51, 0.05) 0px, transparent 50%),
-    radial-gradient(at 50% 50%, rgba(197, 160, 89, 0.04) 0px, transparent 100%);
+    radial-gradient(at 10% 10%, rgba(200, 179, 142, 0.08) 0px, transparent 40%),
+    radial-gradient(at 90% 90%, rgba(115, 32, 43, 0.04) 0px, transparent 50%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
   background-attachment: fixed;
 }
 
@@ -42,24 +35,78 @@ body {
 }
 
 .font-cursive {
-  font-family: 'Great Vibes', cursive;
+  font-family: 'Playfair Display', Georgia, serif;
 }
 
 .font-sans {
   font-family: 'Montserrat', system-ui, sans-serif;
 }
 
-/* Gold Foil Text Gradient */
-.gold-foil-text {
-  background: linear-gradient(135deg, #8C621E 0%, #C5A059 40%, #ECC880 70%, #AA7A2B 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Hairline borders & Clean Stationery Cards */
+.envelope-cotton-paper {
+  background-color: #FAF8F5;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.9) 0%, rgba(248, 244, 237, 0.7) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paperNoise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paperNoise)' opacity='0.035'/%3E%3C/svg%3E");
+  box-shadow: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.5),
+    0 10px 20px -5px rgba(0, 0, 0, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8),
+    inset 0 0 25px rgba(214, 206, 191, 0.25);
+  border: 1px solid #E2DCD1;
 }
 
-.bordeaux-foil-text {
-  background: linear-gradient(135deg, #5E121E 0%, #852233 50%, #B83A4B 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.stationery-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E8E2D8;
+  box-shadow: 0 4px 20px -2px rgba(28, 26, 23, 0.04);
+}
+
+.stationery-panel {
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E5DFD5;
+  box-shadow: 0 8px 30px -4px rgba(28, 26, 23, 0.05);
+}
+
+.parchment-panel {
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid #E5DFD5;
+  box-shadow: 0 8px 30px -4px rgba(28, 26, 23, 0.05);
+}
+
+.parchment-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E8E2D8;
+  box-shadow: 0 4px 20px -2px rgba(28, 26, 23, 0.04);
+}
+
+/* Minimalist Button Styling */
+.btn-royal-gold, .btn-charcoal {
+  background-color: #1C1A17;
+  color: #FAF7F2;
+  transition: all 0.25s ease;
+  border: 1px solid #1C1A17;
+}
+
+.btn-royal-gold:hover, .btn-charcoal:hover {
+  background-color: #383530;
+  transform: translateY(-1px);
+}
+
+.btn-royal-bordeaux, .btn-burgundy {
+  background-color: #73202B;
+  color: #FFFFFF;
+  transition: all 0.25s ease;
+  border: 1px solid #73202B;
+}
+
+.btn-royal-bordeaux:hover, .btn-burgundy:hover {
+  background-color: #8C2835;
+  transform: translateY(-1px);
 }
 
 /* Keyframes & Animations */
@@ -209,6 +256,71 @@ body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Haute Couture Scroll Reveal Transitions */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-from-left {
+  opacity: 0;
+  transform: translateX(-36px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-from-left.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-from-right {
+  opacity: 0;
+  transform: translateX(36px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-from-right.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-zoom-in {
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-zoom-in.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Scroll Bounce Indicator */
+@keyframes scrollBounce {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(8px);
+    opacity: 1;
+  }
+}
+
+.animate-scroll-bounce {
+  animation: scrollBounce 2.2s ease-in-out infinite;
 }
 
 /* Luxury Royal Scrollbar */

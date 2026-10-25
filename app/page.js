@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import { 
   MapPin, Clock, Copy, Check, X
 } from 'lucide-react';
@@ -32,6 +33,22 @@ export default function WeddingPage() {
   const [rsvpForm, setRsvpForm] = useState({ name: '', phone: '', attending: 'yes', guestCount: 1, note: '' });
   const [rsvpSubmitting, setRsvpSubmitting] = useState(false);
   const [rsvpMessage, setRsvpMessage] = useState(null);
+
+  // Personalized Guest State (?to=... or ?guest=...)
+  const [guestName, setGuestName] = useState('');
+
+  // Extract personalized guest name from URL parameter
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const to = params.get('to') || params.get('guest') || params.get('k') || '';
+      if (to.trim()) {
+        const decoded = decodeURIComponent(to.trim());
+        setGuestName(decoded);
+        setRsvpForm(prev => ({ ...prev, name: decoded }));
+      }
+    }
+  }, []);
 
   // Guestbook State
   const [wishes, setWishes] = useState([]);
@@ -169,10 +186,25 @@ export default function WeddingPage() {
     };
   }, [isOpened]);
 
-  // Open envelope ritual & initiate background music
+  // Open envelope ritual & initiate background music & confetti celebration
   const handleOpenEnvelope = () => {
     if (isEnvelopeOpening || isOpened) return;
     setIsEnvelopeOpening(true);
+
+    // Golden Sparkle Confetti Burst
+    try {
+      confetti({
+        particleCount: 55,
+        spread: 80,
+        origin: { y: 0.58 },
+        colors: ['#ECC880', '#D4AF37', '#852233', '#FAF5E8', '#C5A059'],
+        ticks: 200,
+        gravity: 0.8,
+        scalar: 1.1,
+      });
+    } catch (e) {
+      // ignore
+    }
 
     if (audioRef.current) {
       audioRef.current.play().then(() => {
@@ -184,8 +216,31 @@ export default function WeddingPage() {
 
     setTimeout(() => {
       setIsOpened(true);
-    }, 700);
+    }, 750);
   };
+
+  // Scroll Reveal Observer for cinematic section entrances
+  useEffect(() => {
+    if (!isOpened) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -30px 0px' }
+    );
+
+    const revealElements = document.querySelectorAll(
+      '.reveal-on-scroll, .reveal-from-left, .reveal-from-right, .reveal-zoom-in'
+    );
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [isOpened]);
 
   const toggleMusic = () => {
     if (!audioRef.current) return;
@@ -292,50 +347,50 @@ export default function WeddingPage() {
       {/* 1. ROYAL ENVELOPE OPENING OVERLAY (Nắp Phong Thư Sáp Hoàng Gia) */}
       {/* ========================================================= */}
       {!isOpened && (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-[#1F0C10] via-[#150709] to-[#0D0406] px-4 transition-all duration-700 ${isEnvelopeOpening ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100'}`}>
-          {/* Subtle Damask Glow Backdrop */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(236,200,128,0.12)_0%,_rgba(94,18,30,0.18)_50%,_transparent_100%)] pointer-events-none"></div>
+        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-[#181614] px-4 transition-all duration-700 ${isEnvelopeOpening ? 'opacity-0 pointer-events-none scale-105' : 'opacity-100'}`}>
+          {/* Subtle Warm Vignette */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.06)_0%,_rgba(0,0,0,0.6)_100%)] pointer-events-none"></div>
 
           <div className="relative z-10 max-w-lg w-full text-center">
             
-            {/* Top Royal Invitation Crest */}
-            <div className="mb-6">
-              <div className="inline-flex items-center space-x-2 text-[#ECC880] text-[10px] tracking-[0.3em] uppercase font-semibold">
-                <LaurelBranch direction="left" className="w-5 h-5 text-[#ECC880]" />
-                <span>Thiệp Mời Khánh Tiệc</span>
-                <LaurelBranch direction="right" className="w-5 h-5 text-[#ECC880]" />
-              </div>
-            </div>
-
-            {/* Haute Couture Envelope Outer Card */}
-            <div className="relative bg-[#FAF7F2] p-8 sm:p-12 rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] border-2 border-[#ECC880]/70 overflow-hidden">
-              {/* Corner Ornaments */}
-              <CornerFlourish position="top-left" className="absolute top-3 left-3 w-8 h-8 text-[#C5A059]" />
-              <CornerFlourish position="top-right" className="absolute top-3 right-3 w-8 h-8 text-[#C5A059]" />
-              <CornerFlourish position="bottom-left" className="absolute bottom-3 left-3 w-8 h-8 text-[#C5A059]" />
-              <CornerFlourish position="bottom-right" className="absolute bottom-3 right-3 w-8 h-8 text-[#C5A059]" />
-
-              {/* Gold Top Border */}
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FAF5E8] via-[#C5A059] to-[#FAF5E8]"></div>
-
-              <span className="font-sans text-[#AA7A2B] uppercase tracking-[0.3em] text-[11px] font-bold block mb-2">
-                ROYAL WEDDING INVITATION
+            {/* Stationery Wedding Envelope Outer Card */}
+            <div className="relative envelope-cotton-paper p-8 sm:p-12 rounded-2xl overflow-hidden">
+              
+              <span className="font-sans text-[#8A725A] uppercase tracking-[0.35em] text-[10px] font-semibold block mb-3">
+                THIỆP MỜI THÀNH HÔN
               </span>
 
-              {/* Couple Names */}
-              <h1 className="font-cursive text-5xl sm:text-6xl text-[#2C2018] mt-2 mb-2 leading-tight">
-                {groom.shortName} <span className="text-[#852233] font-cursive">&</span> {bride.shortName}
-              </h1>
+              {/* Couple Names - Unified Horizontal Rhythm */}
+              <div className="my-3 font-display italic text-3xl sm:text-4xl text-[#1C1A17] font-normal tracking-wide flex items-center justify-center flex-wrap">
+                <span>{groom.shortName}</span>
+                <span className="font-serif italic text-[#73202B] mx-2.5 font-light">&amp;</span>
+                <span>{bride.shortName}</span>
+              </div>
 
-              {/* Baroque Gold Divider */}
-              <BaroqueDivider className="w-40 h-5 mx-auto my-3 text-[#C5A059]" />
+              {/* Minimalist Hairline Divider */}
+              <div className="w-12 h-px bg-[#D6CEBF] mx-auto my-4"></div>
 
-              <p className="font-serif italic text-[#4A3B32] text-sm sm:text-base max-w-sm mx-auto mb-8 leading-relaxed">
-                Trân trọng kính mời quý khách và gia quyến đến tham dự lễ thành hôn của chúng tôi
-              </p>
+              {/* Personalized Guest Invitation - Clean & Floating (No Clunky Box) */}
+              {guestName ? (
+                <div className="my-6 text-center">
+                  <span className="text-[10px] text-[#8A725A] uppercase tracking-[0.3em] font-semibold block mb-1">
+                    TRÂN TRỌNG KÍNH MỜI
+                  </span>
+                  <span className="font-serif font-normal text-2xl sm:text-3xl text-[#1C1A17] block tracking-wide">
+                    {guestName}
+                  </span>
+                  <span className="text-[12px] text-[#7D776F] font-serif italic block mt-1.5">
+                    Đến chung vui cùng gia đình chúng tôi
+                  </span>
+                </div>
+              ) : (
+                <p className="font-serif italic text-[#4A4641] text-sm sm:text-base max-w-sm mx-auto mb-6 leading-relaxed">
+                  Trân trọng kính mời quý khách và gia quyến đến tham dự lễ thành hôn của chúng tôi
+                </p>
+              )}
 
               {/* Central Wax Seal Button */}
-              <div className="flex flex-col items-center justify-center my-2">
+              <div className="flex flex-col items-center justify-center my-3">
                 <RoyalWaxSeal 
                   initials={coupleMonogram} 
                   onClick={handleOpenEnvelope} 
@@ -344,14 +399,14 @@ export default function WeddingPage() {
                 />
                 <button
                   onClick={handleOpenEnvelope}
-                  className="mt-6 text-xs uppercase tracking-[0.25em] font-semibold text-[#8C621E] hover:text-[#5E121E] transition duration-300 flex items-center space-x-1 underline underline-offset-4 cursor-pointer"
+                  className="mt-6 text-[11px] uppercase tracking-[0.25em] font-medium text-[#7D776F] hover:text-[#1C1A17] transition duration-300 flex items-center space-x-1 cursor-pointer"
                 >
                   <span>Chạm con dấu sáp để mở thiệp</span>
                 </button>
               </div>
             </div>
 
-            <p className="text-[#ECC880]/70 text-[11px] mt-6 tracking-[0.2em] uppercase font-sans">
+            <p className="text-[#FAF7F2]/40 text-[11px] mt-6 tracking-[0.2em] uppercase font-sans">
               Âm nhạc hòa tấu sẽ tự động cất lên khi mở thiệp
             </p>
           </div>
@@ -369,102 +424,117 @@ export default function WeddingPage() {
         <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-4 py-16 sm:py-24 bg-[#FAF7F2]">
           
           <div className="max-w-3xl mx-auto z-10 w-full">
-            {/* Top Royal Tagline Badge with Laurel Branches */}
-            <div className="inline-flex items-center justify-center space-x-2 px-5 py-2 rounded-full bg-[#FAF5E8] border border-[#ECC880] shadow-sm mb-6">
-              <LaurelBranch direction="left" className="w-4 h-4 text-[#AA7A2B]" />
-              <span className="font-sans text-[#8C621E] text-xs tracking-[0.25em] uppercase font-bold">
+            {/* Top Royal Tagline */}
+            <div className="mb-4">
+              <span className="font-sans text-[#8A725A] text-[11px] tracking-[0.35em] uppercase font-semibold">
                 {event.title || 'LỄ THÀNH HÔN'}
               </span>
-              <LaurelBranch direction="right" className="w-4 h-4 text-[#AA7A2B]" />
             </div>
 
-            {/* Couple Main Typography Title */}
-            <div className="space-y-1 my-4">
-              <h1 className="font-cursive text-6xl sm:text-7xl md:text-8xl text-[#2C2018] leading-tight tracking-wide drop-shadow-sm">
+            {/* Couple Main Typography Title - Clean High-Fashion Editorial */}
+            <div className="my-6">
+              <h1 className="font-display italic text-5xl sm:text-7xl md:text-8xl text-[#1C1A17] font-normal tracking-wide leading-tight">
                 {groom.fullName}
               </h1>
-              <div className="font-cursive text-4xl sm:text-5xl md:text-6xl text-[#852233] my-1">
-                &amp;
+              <div className="font-serif italic text-3xl sm:text-4xl text-[#73202B] my-2 font-light">
+                và
               </div>
-              <h1 className="font-cursive text-6xl sm:text-7xl md:text-8xl text-[#2C2018] leading-tight tracking-wide drop-shadow-sm">
+              <h1 className="font-display italic text-5xl sm:text-7xl md:text-8xl text-[#1C1A17] font-normal tracking-wide leading-tight">
                 {bride.fullName}
               </h1>
             </div>
 
-            {/* Baroque Divider */}
-            <BaroqueDivider className="w-52 sm:w-64 h-6 mx-auto my-6 text-[#C5A059]" />
+            {/* Subtle Minimalist Hairline */}
+            <div className="w-16 h-px bg-[#D6CEBF] mx-auto my-6"></div>
 
-            {/* Couple Palace Arch Photo Frame */}
-            <div className="relative mx-auto w-72 h-[400px] sm:w-80 sm:h-[460px] md:w-96 md:h-[520px] mb-10 group">
-              {/* Outer Golden Arch Frame */}
-              <div className="royal-arch-frame w-full h-full relative overflow-hidden shadow-[0_20px_50px_rgba(44,32,24,0.25)]">
-                
-                {/* 4 Corner Flourishes */}
-                <CornerFlourish position="top-left" className="absolute top-4 left-4 z-10 w-7 h-7 text-[#FAF5E8] drop-shadow" />
-                <CornerFlourish position="top-right" className="absolute top-4 right-4 z-10 w-7 h-7 text-[#FAF5E8] drop-shadow" />
-                <CornerFlourish position="bottom-left" className="absolute bottom-4 left-4 z-10 w-7 h-7 text-[#FAF5E8] drop-shadow" />
-                <CornerFlourish position="bottom-right" className="absolute bottom-4 right-4 z-10 w-7 h-7 text-[#FAF5E8] drop-shadow" />
+            {/* Personalized Guest Badge inside invitation */}
+            {guestName && (
+              <div className="mb-8 py-3.5 px-6 max-w-sm mx-auto rounded-xl bg-white border border-[#E5DFD5] shadow-xs text-center">
+                <span className="text-[10px] text-[#8A725A] uppercase tracking-[0.25em] font-medium block">
+                  Kính Gửi Quý Khách
+                </span>
+                <span className="font-serif font-bold text-2xl text-[#1C1A17] block mt-1 tracking-wide">
+                  {guestName}
+                </span>
+                <p className="text-[12px] text-[#7D776F] font-serif italic mt-1">
+                  Sự hiện diện của bạn là niềm vinh hạnh lớn nhất cho gia đình chúng tôi
+                </p>
+              </div>
+            )}
 
-                {/* Inner Image Container with Arch */}
-                <div className="w-full h-full rounded-t-full rounded-b-xl overflow-hidden relative border-2 border-[#FAF5E8]">
-                  <img 
-                    src={media.coverImage} 
-                    alt="Ảnh cưới tân lang và tân nương" 
-                    className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-1000 ease-out" 
-                  />
-                  {/* Subtle inner gold vignette */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#2C2018]/30 via-transparent to-transparent pointer-events-none"></div>
-                </div>
+            {/* Couple Palace Arch Photo Frame - Clean Architectural Gallery */}
+            <div className="relative mx-auto w-72 h-[420px] sm:w-88 sm:h-[500px] md:w-[400px] md:h-[560px] mb-10 p-2.5 bg-white rounded-t-full rounded-b-2xl border border-[#E5DFD5] shadow-xl group">
+              <div className="w-full h-full rounded-t-full rounded-b-xl overflow-hidden relative border border-[#EAE4DA]">
+                <img 
+                  src={media.coverImage} 
+                  alt="Ảnh cưới tân lang và tân nương" 
+                  className="w-full h-full object-cover object-top transform group-hover:scale-102 transition-transform duration-700 ease-out" 
+                />
               </div>
             </div>
 
-            {/* Save The Date & Lunar Date Badge */}
-            <div className="max-w-md mx-auto parchment-card py-5 px-6 rounded-2xl border border-[#ECC880]/80 shadow-md">
-              <p className="font-sans text-[11px] uppercase tracking-[0.3em] text-[#8C621E] font-bold mb-1">
+            {/* Save The Date Card */}
+            <div className="max-w-md mx-auto bg-white py-5 px-6 rounded-xl border border-[#E5DFD5] shadow-xs">
+              <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-medium mb-1">
                 SAVE OUR SPECIAL DATE
               </p>
-              <p className="font-serif text-2xl sm:text-3xl text-[#2C2018] font-bold tracking-wide">
+              <p className="font-serif text-2xl sm:text-3xl text-[#1C1A17] font-semibold tracking-wide">
                 {new Date(event.weddingDate).toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
-              <p className="text-[#6B5B52] italic font-serif text-sm mt-1">
+              <p className="text-[#7D776F] italic font-serif text-xs mt-1">
                 (Tức ngày {event.lunarDate})
               </p>
+            </div>
+
+            {/* Smooth Scroll Down Indicator */}
+            <div 
+              className="mt-12 animate-scroll-bounce cursor-pointer inline-flex flex-col items-center select-none"
+              onClick={() => {
+                const nextEl = document.getElementById('countdown-section');
+                if (nextEl) nextEl.scrollIntoView({ behavior: 'smooth' });
+              }}
+              title="Cuộn xuống khám phá"
+            >
+              <span className="text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-medium mb-2 font-sans">
+                Cuộn xuống để khám phá
+              </span>
+              <div className="w-7 h-7 rounded-full bg-white border border-[#E5DFD5] flex items-center justify-center shadow-xs">
+                <svg className="w-3.5 h-3.5 text-[#1C1A17]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
             </div>
 
           </div>
         </section>
 
         {/* ========================================================= */}
-        {/* 3. VINTAGE CLOCKWORK COUNTDOWN SECTION */}
+        {/* 3. EDITORIAL MINIMALIST COUNTDOWN SECTION */}
         {/* ========================================================= */}
-        <section className="py-16 bg-gradient-to-b from-[#FAF7F2] via-[#F4EBE1] to-[#FAF7F2] px-4 border-y border-[#ECC880]/40">
-          <div className="max-w-2xl mx-auto text-center">
+        <section id="countdown-section" className="py-16 bg-[#F5EFE6]/60 px-4 border-y border-[#E5DFD5] reveal-on-scroll">
+          <div className="max-w-xl mx-auto text-center">
             
-            <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-              <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-              <span>Đếm Ngược Thời Gian</span>
-              <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-            </div>
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+              ĐẾM NGƯỢC THỜI GIAN
+            </span>
 
-            <h2 className="font-display text-3xl sm:text-4xl text-[#2C2018] font-bold mb-2">
+            <h2 className="font-display italic text-3xl sm:text-4xl text-[#1C1A17] font-normal mb-8">
               Cùng Chờ Đón Khoảnh Khắc Hạnh Phúc
             </h2>
-            
-            <BaroqueDivider className="w-36 h-4 mx-auto mb-8 text-[#C5A059]" />
 
-            {/* 4 Clockwork Pods */}
-            <div className="grid grid-cols-4 gap-3 sm:gap-6">
+            {/* 4 Clean Divided Columns */}
+            <div className="grid grid-cols-4 divide-x divide-[#E5DFD5] py-6 bg-white/90 backdrop-blur rounded-2xl border border-[#E5DFD5] shadow-xs">
               {[
                 { label: 'NGÀY', value: timeLeft.days },
                 { label: 'GIỜ', value: timeLeft.hours },
                 { label: 'PHÚT', value: timeLeft.minutes },
                 { label: 'GIÂY', value: timeLeft.seconds },
               ].map((item, idx) => (
-                <div key={idx} className="clockwork-pod p-3.5 sm:p-6 rounded-2xl text-center relative group">
-                  <span className="font-display text-3xl sm:text-5xl font-bold text-[#8C621E] block drop-shadow-sm">
+                <div key={idx} className="px-2 text-center">
+                  <span className="font-display font-light text-3xl sm:text-5xl text-[#1C1A17] block">
                     {String(item.value).padStart(2, '0')}
                   </span>
-                  <span className="text-[10px] sm:text-xs tracking-[0.25em] text-[#736154] font-bold uppercase mt-1 block font-sans">
+                  <span className="text-[10px] tracking-[0.25em] text-[#8A725A] font-semibold uppercase mt-1 block font-sans">
                     {item.label}
                   </span>
                 </div>
@@ -480,26 +550,21 @@ export default function WeddingPage() {
         <section className="py-20 px-4 max-w-5xl mx-auto">
           
           <div className="text-center max-w-xl mx-auto mb-16">
-            <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-              <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-              <span>Tân Lang &amp; Tân Nương</span>
-              <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-            </div>
-            <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold">
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+              NHÂN VẬT CHÍNH
+            </span>
+            <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal">
               Cô Dâu &amp; Chú Rể
             </h2>
-            <BaroqueDivider className="w-44 h-5 mx-auto mt-3 text-[#C5A059]" />
+            <div className="w-16 h-px bg-[#D6CEBF] mx-auto mt-4"></div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 sm:gap-12">
             
             {/* Chú Rể (Tân Lang) */}
-            <div className="parchment-card p-8 sm:p-10 rounded-3xl text-center relative border border-[#ECC880]">
-              <CornerFlourish position="top-left" className="absolute top-3 left-3 w-6 h-6 text-[#C5A059]" />
-              <CornerFlourish position="top-right" className="absolute top-3 right-3 w-6 h-6 text-[#C5A059]" />
-
-              {/* Oval Gold Border Frame */}
-              <div className="w-40 h-40 mx-auto rounded-full overflow-hidden p-1.5 bg-gradient-to-tr from-[#AA7A2B] via-[#ECC880] to-[#C5A059] shadow-lg mb-5">
+            <div className="bg-white p-8 sm:p-10 rounded-2xl text-center border border-[#E5DFD5] shadow-xs reveal-from-left">
+              {/* Circular Portrait */}
+              <div className="w-36 h-36 mx-auto rounded-full overflow-hidden p-1 border border-[#DCD2C3] mb-5">
                 <img 
                   src={groom.avatar} 
                   alt={groom.fullName} 
@@ -507,34 +572,30 @@ export default function WeddingPage() {
                 />
               </div>
 
-              {/* Silk Sand Badge for Groom */}
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#FAF5E8] text-[#8C621E] border border-[#ECC880] text-xs font-bold uppercase tracking-[0.2em] mb-2 font-sans">
-                TÂN LANG
+              <span className="text-[10px] tracking-[0.3em] uppercase text-[#8A725A] font-semibold block mb-1">
+                CHÚ RỂ
               </span>
 
-              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2C2018] mb-2">
+              <h3 className="font-serif text-2xl font-bold text-[#1C1A17] mb-2">
                 {groom.fullName}
               </h3>
               
-              <p className="text-[#4A3B32] text-sm sm:text-base mb-6 leading-relaxed">
+              <p className="text-[#4A4641] text-sm mb-6 leading-relaxed">
                 {groom.description}
               </p>
               
               {/* Nhà Trai */}
-              <div className="border-t border-[#ECC880]/60 pt-5 text-xs sm:text-sm text-[#736154] space-y-1.5 font-sans">
-                <p className="font-bold text-[#8C621E] tracking-[0.15em] uppercase">ĐẠI DIỆN NHÀ TRAI</p>
-                <p>Thân phụ: <span className="font-serif font-bold text-[#2C2018] text-sm">{groom.father}</span></p>
-                <p>Thân mẫu: <span className="font-serif font-bold text-[#2C2018] text-sm">{groom.mother}</span></p>
+              <div className="border-t border-[#E5DFD5] pt-5 text-xs text-[#7D776F] space-y-1 font-sans">
+                <p className="font-semibold text-[#8A725A] tracking-[0.2em] uppercase">ĐẠI DIỆN NHÀ TRAI</p>
+                <p>Thân phụ: <span className="font-serif font-bold text-[#1C1A17] text-sm">{groom.father}</span></p>
+                <p>Thân mẫu: <span className="font-serif font-bold text-[#1C1A17] text-sm">{groom.mother}</span></p>
               </div>
             </div>
 
             {/* Cô Dâu (Tân Nương) */}
-            <div className="parchment-card p-8 sm:p-10 rounded-3xl text-center relative border border-[#EDB0B8]">
-              <CornerFlourish position="top-left" className="absolute top-3 left-3 w-6 h-6 text-[#852233]" />
-              <CornerFlourish position="top-right" className="absolute top-3 right-3 w-6 h-6 text-[#852233]" />
-
-              {/* Oval Wine Rose Border Frame */}
-              <div className="w-40 h-40 mx-auto rounded-full overflow-hidden p-1.5 bg-gradient-to-tr from-[#852233] via-[#EDB0B8] to-[#5E121E] shadow-lg mb-5">
+            <div className="bg-white p-8 sm:p-10 rounded-2xl text-center border border-[#E5DFD5] shadow-xs reveal-from-right">
+              {/* Circular Portrait */}
+              <div className="w-36 h-36 mx-auto rounded-full overflow-hidden p-1 border border-[#E0D7C9] mb-5">
                 <img 
                   src={bride.avatar} 
                   alt={bride.fullName} 
@@ -542,94 +603,80 @@ export default function WeddingPage() {
                 />
               </div>
 
-              {/* Bordeaux Silk Badge for Bride */}
-              <span className="inline-block px-4 py-1.5 rounded-full bg-[#FBF0F1] text-[#852233] border border-[#EDB0B8] text-xs font-bold uppercase tracking-[0.2em] mb-2 font-sans">
-                TÂN NƯƠNG
+              <span className="text-[10px] tracking-[0.3em] uppercase text-[#73202B] font-semibold block mb-1">
+                CÔ DÂU
               </span>
 
-              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2C2018] mb-2">
+              <h3 className="font-serif text-2xl font-bold text-[#1C1A17] mb-2">
                 {bride.fullName}
               </h3>
               
-              <p className="text-[#4A3B32] text-sm sm:text-base mb-6 leading-relaxed">
+              <p className="text-[#4A4641] text-sm mb-6 leading-relaxed">
                 {bride.description}
               </p>
               
               {/* Nhà Gái */}
-              <div className="border-t border-[#EDB0B8]/60 pt-5 text-xs sm:text-sm text-[#736154] space-y-1.5 font-sans">
-                <p className="font-bold text-[#852233] tracking-[0.15em] uppercase">ĐẠI DIỆN NHÀ GÁI</p>
-                <p>Thân phụ: <span className="font-serif font-bold text-[#2C2018] text-sm">{bride.father}</span></p>
-                <p>Thân mẫu: <span className="font-serif font-bold text-[#2C2018] text-sm">{bride.mother}</span></p>
+              <div className="border-t border-[#E5DFD5] pt-5 text-xs text-[#7D776F] space-y-1 font-sans">
+                <p className="font-semibold text-[#73202B] tracking-[0.2em] uppercase">ĐẠI DIỆN NHÀ GÁI</p>
+                <p>Thân phụ: <span className="font-serif font-bold text-[#1C1A17] text-sm">{bride.father}</span></p>
+                <p>Thân mẫu: <span className="font-serif font-bold text-[#1C1A17] text-sm">{bride.mother}</span></p>
               </div>
             </div>
 
           </div>
 
           {/* Invitation Message Box */}
-          <div className="mt-14 parchment-panel p-8 sm:p-12 rounded-3xl text-center max-w-2xl mx-auto border border-[#ECC880] shadow-lg relative">
-            <CornerFlourish position="top-left" className="absolute top-3 left-3 w-7 h-7 text-[#C5A059]" />
-            <CornerFlourish position="bottom-right" className="absolute bottom-3 right-3 w-7 h-7 text-[#C5A059]" />
-
-            <InterlockingRingsIcon className="w-10 h-6 mx-auto mb-4 text-[#AA7A2B]" />
-            
-            <p className="font-serif italic text-[#2C2018] text-base sm:text-lg leading-relaxed">
+          <div className="mt-16 bg-white/80 backdrop-blur p-8 sm:p-12 rounded-2xl text-center max-w-2xl mx-auto border border-[#E5DFD5] shadow-xs reveal-zoom-in">
+            <p className="font-display italic text-[#1C1A17] text-lg sm:text-xl leading-relaxed">
               "{event.message}"
             </p>
-
-            <BaroqueDivider className="w-32 h-4 mx-auto mt-4 text-[#C5A059]" />
+            <div className="w-12 h-px bg-[#D6CEBF] mx-auto mt-6"></div>
           </div>
 
         </section>
 
         {/* ========================================================= */}
-        {/* 5. PALACE VENUE & DIRECTIONS SECTION */}
+        {/* 5. VENUE & DIRECTIONS SECTION */}
         {/* ========================================================= */}
-        <section className="py-20 bg-[#F4EBE1]/70 px-4 border-y border-[#ECC880]/30">
+        <section className="py-20 bg-[#F5EFE6]/50 px-4 border-y border-[#E5DFD5] reveal-on-scroll">
           <div className="max-w-4xl mx-auto text-center">
             
-            <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-              <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-              <span>Thời Gian &amp; Địa Điểm</span>
-              <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-            </div>
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+              THỜI GIAN &amp; ĐỊA ĐIỂM
+            </span>
 
-            <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold mt-1 mb-12">
+            <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal mb-10">
               Tiệc Mừng Hạnh Phúc
             </h2>
 
-            <div className="parchment-card p-8 sm:p-14 rounded-3xl shadow-xl border border-[#ECC880] max-w-2xl mx-auto text-center relative">
-              <CornerFlourish position="top-left" className="absolute top-3 left-3 w-7 h-7 text-[#C5A059]" />
-              <CornerFlourish position="top-right" className="absolute top-3 right-3 w-7 h-7 text-[#C5A059]" />
-              <CornerFlourish position="bottom-left" className="absolute bottom-3 left-3 w-7 h-7 text-[#C5A059]" />
-              <CornerFlourish position="bottom-right" className="absolute bottom-3 right-3 w-7 h-7 text-[#C5A059]" />
-
-              <div className="w-16 h-16 rounded-full bg-[#FAF5E8] border border-[#ECC880] flex items-center justify-center mx-auto mb-6 text-[#8C621E] shadow-sm">
-                <MapPin className="w-8 h-8" />
+            <div className="bg-white p-8 sm:p-14 rounded-2xl shadow-xs border border-[#E5DFD5] max-w-2xl mx-auto text-center relative reveal-zoom-in">
+              <div className="w-14 h-14 rounded-full bg-[#FAF7F2] border border-[#E5DFD5] flex items-center justify-center mx-auto mb-6 text-[#1C1A17]">
+                <MapPin className="w-6 h-6" />
               </div>
 
-              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#2C2018] mb-3">
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C1A17] mb-3">
                 {event.venueName}
               </h3>
               
-              <p className="text-[#4A3B32] text-sm sm:text-base mb-8 leading-relaxed max-w-md mx-auto">
+              <p className="text-[#4A4641] text-sm sm:text-base mb-8 leading-relaxed max-w-md mx-auto">
                 {event.venueAddress}
               </p>
 
               {/* Ceremony & Party Dual Times */}
-              <div className="grid grid-cols-2 gap-4 py-5 border-y border-[#ECC880]/70 mb-8 bg-[#FAF5E8]/60 rounded-xl px-4">
-                <div className="border-r border-[#ECC880]/50 pr-2">
-                  <span className="text-[11px] uppercase tracking-[0.2em] text-[#736154] font-bold block mb-1">
+              <div className="grid grid-cols-2 gap-4 py-5 border-y border-[#E5DFD5] mb-8 bg-[#FAF7F2] rounded-xl px-4">
+                <div className="border-r border-[#E5DFD5] pr-2">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#8A725A] font-semibold block mb-1">
                     Lễ Thành Hôn
                   </span>
-                  <span className="font-display text-2xl sm:text-3xl font-bold text-[#8C621E]">
+                  <span className="font-display text-2xl sm:text-3xl font-semibold text-[#1C1A17]">
                     {event.ceremonyTime}
                   </span>
                 </div>
                 <div className="pl-2">
-                  <span className="text-[11px] uppercase tracking-[0.2em] text-[#736154] font-bold block mb-1">
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#73202B] font-semibold block mb-1">
                     Khai Tiệc Mừng
                   </span>
-                  <span className="font-display text-2xl sm:text-3xl font-bold text-[#852233]">
+                  <span className="font-display text-2xl sm:text-3xl font-semibold text-[#73202B]">
                     {event.partyTime}
                   </span>
                 </div>
@@ -640,10 +687,9 @@ export default function WeddingPage() {
                 href={event.mapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center space-x-2.5 px-8 py-4 bg-[#2C2018] text-[#FAF5E8] border border-[#ECC880] rounded-full hover:bg-[#8C621E] transition-all duration-300 shadow-xl text-xs sm:text-sm font-bold tracking-[0.15em] uppercase hover:scale-[1.02] active:scale-[0.98]"
+                className="inline-flex items-center justify-center space-x-2 px-8 py-3.5 bg-[#1C1A17] text-[#FAF7F2] rounded-full hover:bg-[#383530] transition-all duration-300 shadow-sm text-xs font-semibold tracking-[0.15em] uppercase"
               >
-                <RoyalCompassIcon className="w-5 h-5 text-[#ECC880]" />
-                <span>Xem Bản Đồ Chỉ Đường (Google Maps)</span>
+                <span>Xem Bản Đồ Chỉ Đường (Google Maps) ↗</span>
               </a>
 
             </div>
@@ -654,37 +700,35 @@ export default function WeddingPage() {
         {/* 6. ROYAL TIMELINE SECTION (Lịch Trình Hôn Lễ) */}
         {/* ========================================================= */}
         {timeline && timeline.length > 0 && (
-          <section className="py-20 px-4 max-w-3xl mx-auto">
+          <section className="py-20 px-4 max-w-3xl mx-auto reveal-on-scroll">
             
             <div className="text-center mb-16">
-              <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-                <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-                <span>Chương Trình Hôn Lễ</span>
-                <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-              </div>
-              <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold">
+              <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+                CHƯƠNG TRÌNH HÔN LỄ
+              </span>
+              <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal">
                 Lịch Trình Đón Tiếp
               </h2>
-              <BaroqueDivider className="w-40 h-5 mx-auto mt-3 text-[#C5A059]" />
+              <div className="w-16 h-px bg-[#D6CEBF] mx-auto mt-4"></div>
             </div>
 
-            {/* Vertical Royal Gold Thread */}
-            <div className="space-y-8 relative before:absolute before:inset-0 before:left-8 sm:before:left-1/2 before:-translate-x-1/2 before:w-[2px] before:bg-gradient-to-b before:from-[#ECC880] before:via-[#C5A059] before:to-[#ECC880]">
+            {/* Vertical Fine Thread */}
+            <div className="space-y-8 relative before:absolute before:inset-0 before:left-8 sm:before:left-1/2 before:-translate-x-1/2 before:w-[1px] before:bg-[#E5DFD5]">
               {timeline.map((item, idx) => (
-                <div key={idx} className="relative flex items-center justify-between sm:odd:flex-row-reverse group">
+                <div key={idx} className="relative flex items-center justify-between sm:odd:flex-row-reverse group reveal-on-scroll">
                   <div className="w-full sm:w-1/2 pl-16 sm:pl-0 sm:group-odd:pr-10 sm:group-even:pl-10">
-                    <div className="parchment-card p-6 rounded-2xl shadow-sm border border-[#ECC880]/60 hover:shadow-md transition-all">
-                      <span className="inline-block px-3.5 py-1 rounded-full bg-[#FAF5E8] text-[#8C621E] border border-[#ECC880] font-bold text-xs tracking-wider mb-2 font-sans">
+                    <div className="bg-white p-6 rounded-xl shadow-xs border border-[#E5DFD5] hover:border-[#D6CEBF] transition-all">
+                      <span className="inline-block px-3 py-1 rounded-full bg-[#FAF7F2] text-[#8A725A] border border-[#E5DFD5] font-semibold text-[11px] tracking-wider mb-2 font-sans">
                         {item.time}
                       </span>
-                      <h4 className="font-serif text-lg font-bold text-[#2C2018]">{item.title}</h4>
-                      <p className="text-[#4A3B32] text-sm mt-1 leading-relaxed">{item.desc}</p>
+                      <h4 className="font-serif text-lg font-bold text-[#1C1A17]">{item.title}</h4>
+                      <p className="text-[#4A4641] text-sm mt-1 leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
                   
-                  {/* Timeline Gold Node */}
-                  <div className="absolute left-8 sm:left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br from-[#ECC880] via-[#C5A059] to-[#8C621E] border-2 border-[#FAF5E8] shadow-md flex items-center justify-center text-[#FAF5E8]">
-                    <Clock className="w-4 h-4" />
+                  {/* Timeline Node */}
+                  <div className="absolute left-8 sm:left-1/2 -translate-x-1/2 w-7 h-7 rounded-full bg-white border border-[#D6CEBF] shadow-xs flex items-center justify-center text-[#1C1A17]">
+                    <Clock className="w-3.5 h-3.5 text-[#8A725A]" />
                   </div>
                 </div>
               ))}
@@ -697,28 +741,26 @@ export default function WeddingPage() {
         {/* 7. FINE-ART GALLERY & LIGHTBOX SECTION */}
         {/* ========================================================= */}
         {media.gallery && media.gallery.length > 0 && (
-          <section className="py-20 bg-[#FAF7F2] px-4 border-t border-[#ECC880]/30">
+          <section className="py-20 bg-[#FAF7F2] px-4 border-t border-[#E5DFD5] reveal-on-scroll">
             <div className="max-w-5xl mx-auto">
               
               <div className="text-center mb-16">
-                <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-                  <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-                  <span>Khoảnh Khắc Ngọt Ngào</span>
-                  <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-                </div>
-                <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold">
-                  Album Ảnh Cưới Nghệ Thuật
+                <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+                  KHOẢNH KHẮC NGỌT NGÀO
+                </span>
+                <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal">
+                  Album Ảnh Cưới
                 </h2>
-                <BaroqueDivider className="w-44 h-5 mx-auto mt-3 text-[#C5A059]" />
+                <div className="w-16 h-px bg-[#D6CEBF] mx-auto mt-4"></div>
               </div>
 
-              {/* Gallery Grid with Museum Gold Foil Borders */}
+              {/* Gallery Grid with Clean Hairline Borders */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                 {media.gallery.map((imgUrl, idx) => (
                   <div 
                     key={idx} 
                     onClick={() => setLightboxImg(imgUrl)}
-                    className="group relative h-64 sm:h-80 rounded-2xl overflow-hidden shadow-md cursor-pointer border border-[#ECC880]/70 bg-[#F4EBE1]"
+                    className="group relative h-64 sm:h-80 rounded-xl overflow-hidden shadow-xs cursor-pointer border border-[#E5DFD5] bg-white reveal-zoom-in"
                   >
                     <img 
                       src={imgUrl} 
@@ -763,61 +805,50 @@ export default function WeddingPage() {
         )}
 
         {/* ========================================================= */}
-        {/* 8. HỘP MỪNG CƯỚI & VIETQR (Gửi Quà Chúc Phúc) */}
+        {/* 8. HỘP MỪNG CƯỚI & VIETQR */}
         {/* ========================================================= */}
-        <section className="py-20 bg-gradient-to-b from-[#FAF7F2] via-[#F4EBE1] to-[#FAF7F2] px-4 border-y border-[#ECC880]/30">
+        <section className="py-20 bg-[#F5EFE6]/50 px-4 border-y border-[#E5DFD5] reveal-on-scroll">
           <div className="max-w-xl mx-auto text-center">
             
-            <div className="w-16 h-16 rounded-full bg-[#FAF5E8] border border-[#ECC880] flex items-center justify-center mx-auto mb-4 text-[#8C621E] shadow-md">
-              <GoldFoilGiftBox className="w-8 h-8 text-[#8C621E]" />
-            </div>
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+              GỬI QUÀ CHÚC PHÚC
+            </span>
 
-            <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-              <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-              <span>Gửi Quà Chúc Phúc</span>
-              <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-            </div>
-
-            <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold mt-1 mb-3">
+            <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal mt-1 mb-3">
               Hộp Mừng Cưới
             </h2>
 
-            <p className="text-[#4A3B32] text-sm sm:text-base mb-8 leading-relaxed">
-              Sự hiện diện và lời chúc phúc của quý khách là niềm vinh hạnh to lớn cho gia đình chúng tôi. Nếu quý khách muốn gửi quà mừng trực tiếp, có thể quét mã VietQR bên dưới.
+            <p className="text-[#4A4641] text-sm mb-8 leading-relaxed">
+              Sự hiện diện và lời chúc phúc của quý khách là niềm vinh hạnh to lớn cho gia đình chúng tôi.
             </p>
 
-            {/* Dual Silk Tab Switcher */}
-            <div className="flex rounded-full bg-[#FAF5E8] p-1.5 shadow-inner border border-[#ECC880] mb-8 max-w-xs mx-auto">
+            {/* Clean Tab Switcher */}
+            <div className="flex rounded-full bg-[#EAE4DA] p-1 mb-8 max-w-xs mx-auto border border-[#E0D7C9]">
               <button
                 onClick={() => setActiveBankTab('groom')}
-                className={`flex-1 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition duration-300 font-sans ${
+                className={`flex-1 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 font-sans ${
                   activeBankTab === 'groom' 
-                    ? 'btn-royal-gold shadow-md' 
-                    : 'text-[#736154] hover:text-[#2C2018]'
+                    ? 'bg-[#1C1A17] text-[#FAF7F2] shadow-xs' 
+                    : 'text-[#7D776F] hover:text-[#1C1A17]'
                 }`}
               >
                 Mừng Chú Rể
               </button>
               <button
                 onClick={() => setActiveBankTab('bride')}
-                className={`flex-1 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition duration-300 font-sans ${
+                className={`flex-1 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 font-sans ${
                   activeBankTab === 'bride' 
-                    ? 'btn-royal-bordeaux shadow-md' 
-                    : 'text-[#736154] hover:text-[#2C2018]'
+                    ? 'bg-[#73202B] text-white shadow-xs' 
+                    : 'text-[#7D776F] hover:text-[#1C1A17]'
                 }`}
               >
                 Mừng Cô Dâu
               </button>
             </div>
 
-            {/* VietQR Card Styled as Fine Jewelry Box */}
-            <div className="parchment-card p-8 rounded-3xl shadow-xl border border-[#ECC880] relative">
-              <CornerFlourish position="top-left" className="absolute top-3 left-3 w-6 h-6 text-[#C5A059]" />
-              <CornerFlourish position="top-right" className="absolute top-3 right-3 w-6 h-6 text-[#C5A059]" />
-              <CornerFlourish position="bottom-left" className="absolute bottom-3 left-3 w-6 h-6 text-[#C5A059]" />
-              <CornerFlourish position="bottom-right" className="absolute bottom-3 right-3 w-6 h-6 text-[#C5A059]" />
-
-              <div className="w-56 h-56 mx-auto bg-white p-3 rounded-2xl shadow-inner border border-[#ECC880]/50 mb-6 flex items-center justify-center">
+            {/* VietQR Card Styled as Fine Stationery Box */}
+            <div className="bg-white p-8 rounded-2xl shadow-xs border border-[#E5DFD5] relative reveal-zoom-in">
+              <div className="w-52 h-52 mx-auto bg-white p-2 rounded-xl border border-[#E5DFD5] mb-6 flex items-center justify-center">
                 <img 
                   src={vietQrUrl} 
                   alt={`VietQR ${activePersonName}`} 
@@ -825,21 +856,21 @@ export default function WeddingPage() {
                 />
               </div>
 
-              <div className="space-y-2 text-sm text-[#4A3B32] font-sans">
-                <p>Ngân hàng: <span className="font-bold text-[#2C2018]">{activeBank.bankName}</span></p>
-                <p>Chủ tài khoản: <span className="font-bold text-[#2C2018] font-serif">{activeBank.accountName}</span></p>
+              <div className="space-y-1.5 text-sm text-[#4A4641] font-sans">
+                <p>Ngân hàng: <span className="font-bold text-[#1C1A17]">{activeBank.bankName}</span></p>
+                <p>Chủ tài khoản: <span className="font-bold text-[#1C1A17] font-serif">{activeBank.accountName}</span></p>
                 
                 <div className="flex items-center justify-center space-x-2 mt-4">
-                  <span className="font-mono text-base font-bold bg-[#FAF5E8] px-4 py-1.5 rounded-xl text-[#8C621E] border border-[#ECC880]">
+                  <span className="font-mono text-base font-bold bg-[#FAF7F2] px-4 py-1.5 rounded-lg text-[#1C1A17] border border-[#E5DFD5]">
                     {activeBank.accountNo}
                   </span>
                   <button
                     onClick={() => copyBankNo(activeBank.accountNo)}
-                    className="p-2.5 px-3.5 rounded-xl bg-[#2C2018] text-[#FAF5E8] hover:bg-[#8C621E] transition-colors flex items-center space-x-1.5 text-xs font-semibold"
+                    className="p-2 px-3 rounded-lg bg-[#1C1A17] text-[#FAF7F2] hover:bg-[#383530] transition-colors flex items-center space-x-1.5 text-xs font-medium"
                     title="Sao chép số tài khoản"
                   >
-                    {copiedBank ? <Check className="w-4 h-4 text-[#ECC880]" /> : <Copy className="w-4 h-4" />}
-                    <span>{copiedBank ? 'Đã sao chép!' : 'Sao chép'}</span>
+                    {copiedBank ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                    <span>{copiedBank ? 'Đã sao chép' : 'Sao chép'}</span>
                   </button>
                 </div>
               </div>
@@ -849,38 +880,33 @@ export default function WeddingPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* 9. FORM RSVP (Xác Nhận Tham Dự Hoàng Gia) */}
+        {/* 9. FORM RSVP */}
         {/* ========================================================= */}
-        <section className="py-20 px-4 max-w-xl mx-auto">
+        <section className="py-20 px-4 max-w-xl mx-auto reveal-on-scroll">
           
           <div className="text-center mb-10">
-            <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-              <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-              <span>Xác Nhận Tham Dự</span>
-              <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-            </div>
+            <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+              XÁC NHẬN THAM DỰ
+            </span>
             
-            <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold mt-1">
+            <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal mt-1">
               Hồi Đáp RSVP
             </h2>
             
-            <p className="text-[#4A3B32] text-sm mt-3 leading-relaxed">
+            <p className="text-[#7D776F] text-sm mt-3 leading-relaxed">
               Để gia đình chúng tôi chuẩn bị tiệc đón tiếp chu đáo nhất, xin vui lòng gửi xác nhận trước ngày cưới.
             </p>
           </div>
 
-          <form onSubmit={handleRsvpSubmit} className="parchment-panel p-8 sm:p-10 rounded-3xl shadow-xl border border-[#ECC880] space-y-4 relative">
-            <CornerFlourish position="top-left" className="absolute top-3 left-3 w-6 h-6 text-[#C5A059]" />
-            <CornerFlourish position="top-right" className="absolute top-3 right-3 w-6 h-6 text-[#C5A059]" />
-
+          <form onSubmit={handleRsvpSubmit} className="bg-white p-8 sm:p-10 rounded-2xl shadow-xs border border-[#E5DFD5] space-y-4 relative reveal-zoom-in">
             {rsvpMessage && (
-              <div className={`p-4 rounded-xl text-sm ${rsvpMessage.type === 'success' ? 'bg-[#FAF5E8] text-[#8C621E] border border-[#ECC880]' : 'bg-[#FBF0F1] text-[#852233] border border-[#EDB0B8]'}`}>
+              <div className={`p-4 rounded-xl text-sm ${rsvpMessage.type === 'success' ? 'bg-[#F5EFE6] text-[#1C1A17] border border-[#E0D7C9]' : 'bg-[#FBF0F1] text-[#73202B] border border-[#EDB0B8]'}`}>
                 {rsvpMessage.text}
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#736154] mb-1 font-sans">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7D776F] mb-1 font-sans">
                 Họ và tên của quý khách *
               </label>
               <input
@@ -889,12 +915,12 @@ export default function WeddingPage() {
                 value={rsvpForm.name}
                 onChange={e => setRsvpForm({ ...rsvpForm, name: e.target.value })}
                 placeholder="VD: Nguyễn Văn A"
-                className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018]"
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#736154] mb-1 font-sans">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7D776F] mb-1 font-sans">
                 Số điện thoại liên hệ
               </label>
               <input
@@ -902,19 +928,19 @@ export default function WeddingPage() {
                 value={rsvpForm.phone}
                 onChange={e => setRsvpForm({ ...rsvpForm, phone: e.target.value })}
                 placeholder="VD: 0912345678"
-                className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018]"
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17]"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#736154] mb-1 font-sans">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7D776F] mb-1 font-sans">
                   Xác nhận tham dự
                 </label>
                 <select
                   value={rsvpForm.attending}
                   onChange={e => setRsvpForm({ ...rsvpForm, attending: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018]"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17]"
                 >
                   <option value="yes">Chắc chắn tham dự</option>
                   <option value="no">Không thể tham dự</option>
@@ -922,7 +948,7 @@ export default function WeddingPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#736154] mb-1 font-sans">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7D776F] mb-1 font-sans">
                   Số người tham dự
                 </label>
                 <input
@@ -931,13 +957,13 @@ export default function WeddingPage() {
                   max="10"
                   value={rsvpForm.guestCount}
                   onChange={e => setRsvpForm({ ...rsvpForm, guestCount: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018]"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#736154] mb-1 font-sans">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#7D776F] mb-1 font-sans">
                 Lời nhắn gửi đến cô dâu &amp; chú rể
               </label>
               <textarea
@@ -945,14 +971,14 @@ export default function WeddingPage() {
                 value={rsvpForm.note}
                 onChange={e => setRsvpForm({ ...rsvpForm, note: e.target.value })}
                 placeholder="Ghi chú thêm cho cô dâu & chú rể..."
-                className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018] resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17] resize-none"
               ></textarea>
             </div>
 
             <button
               type="submit"
               disabled={rsvpSubmitting}
-              className="w-full py-4 btn-royal-gold rounded-xl shadow-lg uppercase text-xs font-bold tracking-[0.2em] transition-transform duration-300 disabled:opacity-50 cursor-pointer"
+              className="w-full py-3.5 bg-[#1C1A17] hover:bg-[#383530] text-[#FAF7F2] rounded-xl shadow-xs uppercase text-xs font-semibold tracking-[0.2em] transition duration-200 disabled:opacity-50 cursor-pointer"
             >
               {rsvpSubmitting ? 'Đang Gửi Xác Nhận...' : 'Gửi Xác Nhận Ngay'}
             </button>
@@ -960,30 +986,25 @@ export default function WeddingPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* 10. GUESTBOOK / SỔ LƯU BÚT HOÀNG GIA */}
+        {/* 10. GUESTBOOK / SỔ LƯU BÚT */}
         {/* ========================================================= */}
-        <section className="py-20 bg-[#FAF7F2] px-4 border-t border-[#ECC880]/30">
+        <section className="py-20 bg-[#FAF7F2] px-4 border-t border-[#E5DFD5] reveal-on-scroll">
           <div className="max-w-2xl mx-auto">
             
             <div className="text-center mb-12">
-              <div className="inline-flex items-center space-x-2 text-[#AA7A2B] text-xs uppercase tracking-[0.25em] font-bold mb-2">
-                <LaurelBranch direction="left" className="w-3.5 h-3.5" />
-                <span>Sổ Lưu Bút Online</span>
-                <LaurelBranch direction="right" className="w-3.5 h-3.5" />
-              </div>
-              <h2 className="font-display text-4xl sm:text-5xl text-[#2C2018] font-bold">
+              <span className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#8A725A] font-semibold block mb-2">
+                SỔ LƯU BÚT ONLINE
+              </span>
+              <h2 className="font-display italic text-4xl sm:text-5xl text-[#1C1A17] font-normal">
                 Gửi Lời Chúc Phúc
               </h2>
-              <BaroqueDivider className="w-40 h-5 mx-auto mt-3 text-[#C5A059]" />
+              <div className="w-16 h-px bg-[#D6CEBF] mx-auto mt-4"></div>
             </div>
 
             {/* Wish Submit Form */}
-            <form onSubmit={handleWishSubmit} className="parchment-panel p-6 sm:p-8 rounded-3xl shadow-lg border border-[#ECC880] mb-12 space-y-4 relative">
-              <CornerFlourish position="top-left" className="absolute top-3 left-3 w-5 h-5 text-[#C5A059]" />
-              <CornerFlourish position="top-right" className="absolute top-3 right-3 w-5 h-5 text-[#C5A059]" />
-
+            <form onSubmit={handleWishSubmit} className="bg-white p-6 sm:p-8 rounded-2xl shadow-xs border border-[#E5DFD5] mb-12 space-y-4 relative reveal-zoom-in">
               {wishMessage && (
-                <div className={`p-3 rounded-xl text-sm ${wishMessage.type === 'success' ? 'bg-[#FAF5E8] text-[#8C621E] border border-[#ECC880]' : 'bg-[#FBF0F1] text-[#852233] border border-[#EDB0B8]'}`}>
+                <div className={`p-3 rounded-xl text-sm ${wishMessage.type === 'success' ? 'bg-[#F5EFE6] text-[#1C1A17] border border-[#E0D7C9]' : 'bg-[#FBF0F1] text-[#73202B] border border-[#EDB0B8]'}`}>
                   {wishMessage.text}
                 </div>
               )}
@@ -995,7 +1016,7 @@ export default function WeddingPage() {
                   value={wishForm.name}
                   onChange={e => setWishForm({ ...wishForm, name: e.target.value })}
                   placeholder="Tên của bạn hoặc cách xưng hô thân mật..."
-                  className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018]"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17]"
                 />
               </div>
 
@@ -1006,39 +1027,35 @@ export default function WeddingPage() {
                   value={wishForm.message}
                   onChange={e => setWishForm({ ...wishForm, message: e.target.value })}
                   placeholder="Viết lời chúc yêu thương của bạn gửi đến đôi uyên ương..."
-                  className="w-full px-4 py-3 rounded-xl border border-[#ECC880]/70 bg-[#FDFBF7] focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-sm text-[#2C2018] resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] focus:bg-white focus:outline-none focus:border-[#1C1A17] text-sm text-[#1C1A17] resize-none"
                 ></textarea>
               </div>
 
               <button
                 type="submit"
                 disabled={wishSubmitting}
-                className="w-full py-3.5 btn-royal-bordeaux rounded-xl shadow-md uppercase tracking-[0.2em] text-xs font-bold flex items-center justify-center space-x-2 transition disabled:opacity-50 cursor-pointer"
+                className="w-full py-3.5 bg-[#73202B] hover:bg-[#8C2835] text-white rounded-xl shadow-xs uppercase tracking-[0.2em] text-xs font-semibold flex items-center justify-center space-x-2 transition disabled:opacity-50 cursor-pointer"
               >
-                <QuillPenIcon className="w-4 h-4 text-[#FAF5E8]" />
                 <span>{wishSubmitting ? 'Đang Gửi Lời Chúc...' : 'Ký Tên & Gửi Lời Chúc'}</span>
               </button>
             </form>
 
-            {/* Wishes Feed Styled as Parchment Notes */}
+            {/* Wishes Feed */}
             <div className="space-y-4 max-h-[500px] overflow-y-auto pr-1">
               {wishes.length === 0 ? (
-                <p className="text-center text-[#736154] italic py-8 font-serif">
-                  Hãy là người đầu tiên gửi những lời chúc tốt đẹp nhất đến tân lang và tân nương nhé!
+                <p className="text-center text-[#7D776F] italic py-8 font-serif">
+                  Hãy là người đầu tiên gửi những lời chúc tốt đẹp nhất đến đôi uyên ương nhé!
                 </p>
               ) : (
                 wishes.map(item => (
-                  <div key={item.id} className="parchment-card p-5 sm:p-6 rounded-2xl border border-[#ECC880]/60 shadow-sm relative">
+                  <div key={item.id} className="bg-white p-5 sm:p-6 rounded-xl border border-[#E5DFD5] shadow-xs">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <VintageRoseIcon className="w-4 h-4 text-[#852233]" />
-                        <h4 className="font-serif font-bold text-[#2C2018] text-base">{item.name}</h4>
-                      </div>
-                      <span className="text-[11px] text-[#736154] font-sans">
+                      <h4 className="font-serif font-bold text-[#1C1A17] text-base">{item.name}</h4>
+                      <span className="text-[11px] text-[#7D776F] font-sans">
                         {new Date(item.createdAt).toLocaleDateString('vi-VN')}
                       </span>
                     </div>
-                    <p className="text-[#4A3B32] text-sm leading-relaxed font-sans">{item.message}</p>
+                    <p className="text-[#4A4641] text-sm leading-relaxed font-sans">{item.message}</p>
                   </div>
                 ))
               )}
@@ -1048,20 +1065,20 @@ export default function WeddingPage() {
         </section>
 
         {/* ========================================================= */}
-        {/* 11. FOOTER (Chân Trang Hoàng Gia) */}
+        {/* 11. FOOTER */}
         {/* ========================================================= */}
-        <footer className="py-14 text-center bg-[#1A0D0F] text-[#FAF5E8] px-4 border-t-2 border-[#ECC880]/40 relative">
-          <p className="font-cursive text-4xl sm:text-5xl text-[#ECC880] mb-2 tracking-wide">
+        <footer className="py-14 text-center bg-[#181614] text-[#FAF7F2] px-4 border-t border-[#2C2926] relative">
+          <p className="font-display italic text-4xl sm:text-5xl text-[#FAF7F2] mb-3 tracking-wide">
             Thank You!
           </p>
-          <BaroqueDivider className="w-32 h-4 mx-auto mb-4 text-[#C5A059]" />
-          <p className="text-xs text-[#EAD8C7]/80 max-w-md mx-auto leading-relaxed mb-6 font-sans">
+          <div className="w-12 h-px bg-[#4A4641] mx-auto mb-4"></div>
+          <p className="text-xs text-[#A8A29E] max-w-md mx-auto leading-relaxed mb-6 font-sans">
             Chân thành cảm ơn sự hiện diện, tình cảm và những lời chúc phúc quý báu của quý khách dành cho chúng tôi trong ngày vui trọng đại này.
           </p>
-          <div className="flex items-center justify-center space-x-4 text-xs text-[#EAD8C7]/60 font-sans">
-            <span>© 2026 Royal Wedding Invitation</span>
+          <div className="flex items-center justify-center space-x-4 text-xs text-[#78716C] font-sans">
+            <span>© 2026 Wedding Invitation</span>
             <span>•</span>
-            <a href="/admin" className="text-[#ECC880] hover:underline font-semibold">
+            <a href="/admin" className="text-[#D6CEBF] hover:underline font-medium">
               Quản Trị (/admin)
             </a>
           </div>

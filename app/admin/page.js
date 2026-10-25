@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Lock, Save, RefreshCw, Trash2, Download, CheckCircle, 
   AlertCircle, Users, Heart, Image as ImageIcon, Music, CreditCard, 
-  Calendar, Eye, LogOut, Plus, ExternalLink
+  Calendar, Eye, LogOut, Plus, ExternalLink, Share2, Copy, Check, Link as LinkIcon
 } from 'lucide-react';
 
 const POPULAR_BANKS = [
@@ -35,6 +35,11 @@ export default function AdminPage() {
   // New gallery input
   const [newGalleryUrl, setNewGalleryUrl] = useState('');
   const [newPin, setNewPin] = useState('');
+
+  // Guest invitation link generator state
+  const [guestListInput, setGuestListInput] = useState('');
+  const [generatedLinks, setGeneratedLinks] = useState([]);
+  const [copiedLinkIndex, setCopiedLinkIndex] = useState(null);
 
   // Auto login check from localStorage
   useEffect(() => {
@@ -221,6 +226,24 @@ export default function AdminPage() {
     document.body.removeChild(link);
   };
 
+  // Generate personalized invitation links
+  const handleGenerateLinks = () => {
+    if (!guestListInput.trim()) return;
+    const lines = guestListInput.split('\n').map(l => l.trim()).filter(Boolean);
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const results = lines.map(name => {
+      const link = `${origin}/?to=${encodeURIComponent(name)}`;
+      return { name, link };
+    });
+    setGeneratedLinks(results);
+  };
+
+  const handleCopyLink = (link, idx) => {
+    navigator.clipboard.writeText(link);
+    setCopiedLinkIndex(idx);
+    setTimeout(() => setCopiedLinkIndex(null), 2000);
+  };
+
   // LOGIN SCREEN
   if (!isAuthenticated) {
     return (
@@ -344,7 +367,8 @@ export default function AdminPage() {
             { id: 'event', label: '2. Thời Gian & Địa Điểm', icon: Calendar },
             { id: 'media', label: '3. Ảnh & Âm Nhạc', icon: ImageIcon },
             { id: 'bank', label: '4. STK Mừng Cưới (VietQR)', icon: CreditCard },
-            { id: 'rsvps', label: `5. Khách RSVP (${rsvps.length})`, icon: Users },
+            { id: 'links', label: '5. Tạo Link Mời Riêng', icon: Share2 },
+            { id: 'rsvps', label: `6. Khách RSVP (${rsvps.length})`, icon: Users },
             { id: 'reset', label: '⚡ Đám Cưới Mới', icon: RefreshCw },
           ].map(tab => {
             const Icon = tab.icon;
@@ -923,7 +947,138 @@ export default function AdminPage() {
         )}
 
         {/* ========================================================= */}
-        {/* TAB 5: DANH SÁCH RSVP & LỜI CHÚC */}
+        {/* TAB 5: TẠO LINK MỜI RIÊNG TỪNG KHÁCH */}
+        {/* ========================================================= */}
+        {activeTab === 'links' && (
+          <div className="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-stone-200 space-y-6">
+            <div>
+              <h2 className="font-serif text-xl font-bold text-stone-900">
+                Tạo Link Thiệp Mời Riêng Từng Khách (Cá Nhân Hóa)
+              </h2>
+              <p className="text-xs text-stone-500 mt-1">
+                Nhập danh sách tên khách mời hoặc cách xưng hô (mỗi dòng 1 tên). Hệ thống sẽ tự động tạo link thiệp riêng kèm lời mời trang trọng để gửi qua Zalo / Messenger / SMS.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-stone-700 uppercase">
+                Danh sách khách mời (Mỗi người một dòng)
+              </label>
+              <textarea
+                rows={5}
+                value={guestListInput}
+                onChange={e => setGuestListInput(e.target.value)}
+                placeholder={"Ví dụ:\nAnh Nam (Đồng nghiệp)\nGia đình Bác Hùng\nBạn Lan & Người thương\nChú Ba"}
+                className="w-full px-4 py-3 rounded-2xl border border-stone-300 text-sm focus:outline-none focus:border-stone-900 font-mono"
+              />
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={handleGenerateLinks}
+                  className="px-6 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs uppercase tracking-wider transition shadow-sm"
+                >
+                  ✨ Tạo Danh Sách Link Mời
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = "Anh Nam (Đồng nghiệp)\nGia đình Bác Hùng\nBạn Lan & Người thương\nChú Ba";
+                    setGuestListInput(sample);
+                    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+                    setGeneratedLinks(sample.split('\n').map(name => ({
+                      name,
+                      link: `${origin}/?to=${encodeURIComponent(name)}`
+                    })));
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-semibold text-xs"
+                >
+                  Nạp mẫu thử nghiệm
+                </button>
+              </div>
+            </div>
+
+            {generatedLinks.length > 0 && (
+              <div className="pt-4 border-t border-stone-100 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-stone-800 uppercase">
+                    Đã tạo {generatedLinks.length} đường link mời riêng:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const all = generatedLinks.map(g => `${g.name}: ${g.link}`).join('\n');
+                      navigator.clipboard.writeText(all);
+                      alert('Đã copy toàn bộ danh sách link vào clipboard!');
+                    }}
+                    className="text-xs text-amber-700 font-bold hover:underline"
+                  >
+                    Copy toàn bộ danh sách
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto rounded-2xl border border-stone-200">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-stone-50 border-b border-stone-200 text-stone-500 uppercase text-[10px]">
+                      <tr>
+                        <th className="p-3 font-semibold">Tên khách mời</th>
+                        <th className="p-3 font-semibold">Link thiệp mời riêng</th>
+                        <th className="p-3 font-semibold text-right">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100">
+                      {generatedLinks.map((item, idx) => (
+                        <tr key={idx} className="hover:bg-stone-50 transition">
+                          <td className="p-3 font-bold text-stone-900 whitespace-nowrap">
+                            {item.name}
+                          </td>
+                          <td className="p-3 text-stone-500 font-mono text-[11px] truncate max-w-xs">
+                            {item.link}
+                          </td>
+                          <td className="p-3 text-right space-x-2 whitespace-nowrap">
+                            <button
+                              type="button"
+                              onClick={() => handleCopyLink(item.link, idx)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                                copiedLinkIndex === idx
+                                  ? 'bg-emerald-600 text-white'
+                                  : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
+                              }`}
+                            >
+                              {copiedLinkIndex === idx ? '✓ Đã Copy' : 'Copy Link'}
+                            </button>
+                            <a
+                              href={item.link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="px-3 py-1.5 rounded-lg bg-amber-50 text-amber-800 hover:bg-amber-100 text-xs font-bold inline-block"
+                            >
+                              Xem thử ↗
+                            </a>
+                            <a
+                              href={`https://zalo.me`}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={() => {
+                                navigator.clipboard.writeText(`Trân trọng kính mời ${item.name} đến tham dự lễ thành hôn của chúng tôi tại: ${item.link}`);
+                              }}
+                              className="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold inline-block"
+                              title="Tự động copy lời mời kèm link và mở Zalo"
+                            >
+                              Gửi Zalo
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================= */}
+        {/* TAB 6: DANH SÁCH RSVP & LỜI CHÚC */}
         {/* ========================================================= */}
         {activeTab === 'rsvps' && (
           <div className="space-y-6">
